@@ -26,7 +26,7 @@ function App() {
       isCompleted: false,
     }, 
     {
-      id: 3,
+      id: 4,
       text: "Regar as plantas",
       category: "Pessoal",
       isCompleted: false,
@@ -34,60 +34,76 @@ function App() {
   ]);
 
   const [search, setSearch] = useState("");
-
   const [filter, setFilter] = useState("All");
   const [sort, setSort] = useState("Asc");
 
-  const addTodo = (text, category) => {
-
-    const newTodos = [...todos, {
+  const addTodo = (title, description, category) => {
+    const newTodo = {
       id: Math.floor(Math.random() * 10000),
-      text,
-      category,
+      text: title,
+      description: description,
+      category: category,
       isCompleted: false,
-    },
-  ];
+    };
 
-    setTodos(newTodos);
+    setTodos([...todos, newTodo]);
   };
 
   const removeTodo = (id) => {
-    const newTodos = [...todos];
-    const filteredTodos = newTodos.filter((todo) => todo.id !== id ? todo : null);
-    setTodos(filteredTodos);
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   const completeTodo = (id) => {
-    const newTodos = [...todos];
-    newTodos.map((todo) => todo.id === id ? (todo.isCompleted = !todo.isCompleted) : todo);
-    setTodos(newTodos);
-  }
-  
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
+      )
+    );
+  };
+
+  const editTodo = (id, text, description, category) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, text, description, category } : todo
+      )
+    );
+  };
+
   return (
-    <div className='app'> 
+    <div className="app">
       <h1>Lista de Tarefas</h1>
       <Search search={search} setSearch={setSearch} />
-      <Filter filter={filter} setFilter={setFilter} setSort={setSort}/>
+      <Filter filter={filter} setFilter={setFilter} setSort={setSort} />
       <div className='todo-list'>
         {todos
-        .filter((todo) => 
-        filter === "All" 
-        ? true 
-        : filter === "Completed" 
-        ? todo.isCompleted 
-        : !todo.isCompleted).filter((todo) =>
-        todo.text.toLowerCase().includes(search.toLocaleLowerCase())).sort((a, b) => sort === "Asc" 
-                ? a.text.localeCompare(b.text) 
-                : b.text.localeCompare(a.text)).map((todo) => ( <Todo 
-                    key={todo.id} 
-                    todo={todo} 
-                    removeTodo={removeTodo} 
-                    completeTodo={completeTodo} />
-      ))}
+          .filter((todo) =>
+            filter === "All"
+              ? true
+              : filter === "Completed"
+              ? todo.isCompleted
+              : !todo.isCompleted
+          )
+          .filter((todo) =>
+            todo.text.toLowerCase().includes(search.toLowerCase())
+          )
+          .sort((a, b) =>
+            sort === "Asc" ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
+          )
+          .map((todo) => (
+            <Todo
+              key={todo.id}
+              todo={todo}
+              removeTodo={removeTodo}
+              completeTodo={completeTodo}
+              editTodo={editTodo} // Adicionando a função de edição
+            />
+          ))}
       </div>
       <TodoForm addTodo={addTodo} />
-   </div>);
-      
+    </div>
+  );
 }
 
 export default App;
+
+  
